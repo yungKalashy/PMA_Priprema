@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -17,19 +18,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PMA_priprema"
         tools:targetApi="31">
+
         <activity
-            android:name=".CreateNewRecordActivity"
+            android:name=".HeaderActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
+        <activity
+            android:name=".CreateNewRecordActivity"
+            android:exported="false" />
 
         <activity
             android:name=".CameraActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

@@ -4,25 +4,27 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import java.util.Calendar;
-
-import android.content.Intent;
-import android.net.Uri;
-import android.widget.Button;
-import android.widget.ImageView;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+
+import java.util.Calendar;
 
 public class PersonalInfoFragment extends Fragment {
 
     private ImageView imageFoto;
     private ActivityResultLauncher<Intent> cameraLauncher;
+
+    private EditText inputIme;
+    private EditText inputPrezime;
+    private EditText inputDatumRod;
 
     public PersonalInfoFragment() {
         super(R.layout.fragment_personal_info);
@@ -33,7 +35,9 @@ public class PersonalInfoFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        EditText inputDatumRod = view.findViewById(R.id.inputDatumRod);
+        inputIme = view.findViewById(R.id.inputIme);
+        inputPrezime = view.findViewById(R.id.inputPrezime);
+        inputDatumRod = view.findViewById(R.id.inputDatumRod);
 
         inputDatumRod.setOnClickListener(v -> {
             Calendar kalendar = Calendar.getInstance();
@@ -59,13 +63,13 @@ public class PersonalInfoFragment extends Fragment {
         });
 
         imageFoto = view.findViewById(R.id.imageFoto);
-
         Button buttonSlika = view.findViewById(R.id.buttonSlika);
+        Button buttonDalje = view.findViewById(R.id.buttonDalje);
 
         cameraLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == getActivity().RESULT_OK
+                    if (result.getResultCode() == requireActivity().RESULT_OK
                             && result.getData() != null) {
 
                         String imageUriString =
@@ -74,6 +78,11 @@ public class PersonalInfoFragment extends Fragment {
                         if (imageUriString != null) {
                             Uri imageUri = Uri.parse(imageUriString);
                             imageFoto.setImageURI(imageUri);
+
+                            CreateNewRecordActivity activity =
+                                    (CreateNewRecordActivity) requireActivity();
+
+                            activity.getStudent().setFotografija(imageUri);
                         }
                     }
                 }
@@ -82,6 +91,20 @@ public class PersonalInfoFragment extends Fragment {
         buttonSlika.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), CameraActivity.class);
             cameraLauncher.launch(intent);
+        });
+
+        buttonDalje.setOnClickListener(v -> {
+
+            CreateNewRecordActivity activity =
+                    (CreateNewRecordActivity) requireActivity();
+
+            Student student = activity.getStudent();
+
+            student.setIme(inputIme.getText().toString());
+            student.setPrezime(inputPrezime.getText().toString());
+            student.setDatumRod(inputDatumRod.getText().toString());
+
+            activity.getViewPager().setCurrentItem(1, true);
         });
     }
 }
